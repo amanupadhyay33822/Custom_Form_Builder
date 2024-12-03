@@ -25,7 +25,7 @@ export const PreviewForm = (props) => {
         console.log("formid", formId);
         if (formId) {
 
-            fetch(`https://backend-i-am-sai.koyeb.app/forms/?formId=${formId}`)
+            fetch(`http://localhost:8080/forms/?formId=${formId}`)
                 .then((res) => res.json())
                 .then((res) => {
                     console.log('Data from server:', res);

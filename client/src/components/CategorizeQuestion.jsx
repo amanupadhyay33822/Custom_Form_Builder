@@ -1,163 +1,158 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const CategorizeQuestion = ({ questionIndex, questionData, updateQuestionData }) => {
-    const [questionTitle, setQuestionTitle] = useState('');
-    const [imageURL, setImageURL] = useState('');
-    const [mediaOption, setMediaOption] = useState('none');
-    const [categories, setCategories] = useState([]);
-    const [items, setItems] = useState([{ name: '', category: '' }]);
-
-    const handleImageChange = (e) => {
-        // Update the state with the selected image URL
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setImageURL(reader.result);
-        };
-        if (file) {
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleDeleteItem = (index) => {
-        // Remove the item and its category from the list
-        const updatedItems = [...items];
-        updatedItems.splice(index, 1);
-        setItems(updatedItems);
-    };
-
-    const handleQuestionTitleChange = (e) => {
-        // Update the state with the question title
-        setQuestionTitle(e.target.value);
-    };
+const CategorizeQuestion = ({ questionIndex, updateQuestionData }) => {
+    const [questionTitle, setQuestionTitle] = useState("");
+    const [categories, setCategories] = useState(["", ""]);
+    const [items, setItems] = useState([]);
+    const [errors, setErrors] = useState({});
 
     const handleCategoryChange = (index, value) => {
-        // Update the state with the category at the given index
         const updatedCategories = [...categories];
         updatedCategories[index] = value;
         setCategories(updatedCategories);
     };
 
-    const handleItemChange = (index, key, value) => {
-        // Update the state with the item name and its category at the given index
+    const handleAddCategory = () => {
+        setCategories([...categories, ""]);
+    };
+
+    const handleDeleteCategory = (index) => {
+        const updatedCategories = categories.filter((_, i) => i !== index);
+        setCategories(updatedCategories);
+    };
+
+    const handleItemChange = (index, field, value) => {
         const updatedItems = [...items];
-        updatedItems[index][key] = value;
+        updatedItems[index] = { ...updatedItems[index], [field]: value };
         setItems(updatedItems);
     };
 
     const handleAddItem = () => {
-        // Add a new item and assign it to the first category
-        setItems([...items, { name: '', category: categories[0] }]);
+        setItems([...items, { name: "", category: "" }]);
+    };
+
+    const handleDeleteItem = (index) => {
+        const updatedItems = items.filter((_, i) => i !== index);
+        setItems(updatedItems);
     };
 
     const handleSaveQuestion = () => {
+        const newErrors = {};
+
+        if (!questionTitle.trim()) {
+            newErrors.questionTitle = "Question title is required.";
+        }
+
+        if (categories.length < 1 || categories.some((category) => !category.trim())) {
+            newErrors.categories = "At least one valid category is required.";
+        }
+
+        if (items.some((item) => !item.name.trim() || !item.category.trim())) {
+            newErrors.items = "Each item must have a name and category.";
+        }
+
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length > 0) {
+            return;
+        }
+
         updateQuestionData(questionIndex, { categories, items, questionTitle });
-        alert('Question Saved Successfully');
+        alert("Question Saved Successfully");
     };
 
     return (
-        <div className="bg-gray-100 p-4 rounded-lg">
-            {/* Question Title Input */}
-            <label className="block mb-2 text-gray-800 font-bold text-lg"> Question Title :</label>
+        <div className="p-6 bg-white shadow-md rounded-md max-w-3xl mx-auto">
+            <label className="block mb-2 text-gray-800 font-bold text-lg">
+                Question Title :
+            </label>
             <input
                 type="text"
                 placeholder="Enter Question Title"
                 value={questionTitle}
-                onChange={handleQuestionTitleChange}
-                className="block w-full rounded-md border-gray-300 py-2 px-3 mb-4 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                onChange={(e) => setQuestionTitle(e.target.value)}
+                className="block w-full rounded-md border-gray-300 py-2 px-3 mb-1 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-
-            {/* Media Option */}
-            <div className="flex items-center mb-4">
-                <label className="mr-5 block text-gray-800 font-bold text-lg">Image:</label>
-                <select
-                    value={mediaOption}
-                    onChange={(e) => setMediaOption(e.target.value)}
-                    className="w-[80px] block w-full rounded-md border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                    <option value="none">None</option>
-                    <option value="image">Image</option>
-                </select>
-            </div>
-
-            {/* Conditional rendering for image upload input */}
-            {mediaOption === 'image' && (
-                <div className="mb-4">
-                    <label htmlFor="headerImage" className="text-lg font-semibold mr-6">
-                        Upload Question Image (Optional):
-                    </label>
-                    <input id="headerImage" type="file" accept="image/*" onChange={handleImageChange} />
-                </div>
+            {errors.questionTitle && (
+                <p className="text-red-500 text-sm">{errors.questionTitle}</p>
             )}
 
-            {/* Categories Input */}
-            <div className="flex flex-col gap-4 mt-4">
-                <label className="text-gray-800 font-bold text-lg">Categories :</label>
-                <input
-                    type="text"
-                    name="category1"
-                    placeholder="Enter Category 1"
-                    value={categories[0]}
-                    onChange={(e) => handleCategoryChange(0, e.target.value)}
-                    className="w-[250px] rounded-md border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-                <input
-                    type="text"
-                    name="category2"
-                    placeholder="Enter Category 2"
-                    value={categories[1]}
-                    onChange={(e) => handleCategoryChange(1, e.target.value)}
-                    className="w-[250px] rounded-md border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-            </div>
-
-            {/* Items and Categories Assignment */}
-            <div className="mt-4">
-                <div className="flex justify-between w-[320px]">
-                    <label className="text-gray-800 font-bold text-lg">Item</label>
-                    <label className="text-gray-800 font-bold text-left-lg">Category</label>
+            <label className="text-gray-800 font-bold text-lg mt-4 block">
+                Categories :
+            </label>
+            {categories.map((category, index) => (
+                <div key={index} className="flex items-center gap-4 mb-2">
+                    <input
+                        type="text"
+                        placeholder={`Category ${index + 1}`}
+                        value={category}
+                        onChange={(e) => handleCategoryChange(index, e.target.value)}
+                        className="w-[250px] rounded-md border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => handleDeleteCategory(index)}
+                        className="text-red-500 hover:text-red-700"
+                    >
+                        ❌
+                    </button>
                 </div>
-                {items.map((item, index) => (
-                    <div key={index} className="flex justify-between gap-4 mt-4 w-[500px]">
-                        <input
-                            type="text"
-                            placeholder={`Item ${index + 1}`}
-                            value={item.name}
-                            onChange={(e) => handleItemChange(index, 'name', e.target.value)}
-                            className="flex-1 rounded-md border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                        <select
-                            value={item.category}
-                            onChange={(e) => handleItemChange(index, 'category', e.target.value)}
-                            className="flex-1 rounded-md border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        >
-                            <option value="">Select the Category</option>
-                            {categories.map((category, index) => (
-                                <option key={index} value={category}>
-                                    {category}
-                                </option>
-                            ))}
-                        </select>
-                        <button type="button" onClick={() => handleDeleteItem(index)}>
-                            ❌
-                        </button>
-                    </div>
-                ))}
-            </div>
+            ))}
+            {errors.categories && (
+                <p className="text-red-500 text-sm">{errors.categories}</p>
+            )}
+            <button
+                type="button"
+                onClick={handleAddCategory}
+                className="mt-2 px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-700"
+            >
+                Add Category
+            </button>
 
-            {/* Add Item Button */}
+            <label className="text-gray-800 font-bold text-lg mt-6 block">
+                Items and Categories Assignment:
+            </label>
+            {items.map((item, index) => (
+                <div key={index} className="flex justify-between gap-4 mt-4 w-full">
+                    <input
+                        type="text"
+                        placeholder={`Item ${index + 1}`}
+                        value={item.name}
+                        onChange={(e) => handleItemChange(index, "name", e.target.value)}
+                        className="flex-1 rounded-md border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <select
+                        value={item.category}
+                        onChange={(e) => handleItemChange(index, "category", e.target.value)}
+                        className="flex-1 rounded-md border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
+                        <option value="">Select the Category</option>
+                        {categories.map((category, idx) => (
+                            <option key={idx} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </select>
+                    <button type="button" onClick={() => handleDeleteItem(index)}>
+                        ❌
+                    </button>
+                </div>
+            ))}
+            {errors.items && (
+                <p className="text-red-500 text-sm mt-2">{errors.items}</p>
+            )}
             <button
                 type="button"
                 onClick={handleAddItem}
-                className="mt-4 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900"
+                className="mt-2 px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-700"
             >
                 Add Item
             </button>
 
-            {/* Save Question Button */}
             <button
+                type="button"
                 onClick={handleSaveQuestion}
-                className="mt-6 bg-blue-500 hover:bg-[#6e6c72] text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block mx-auto"
+                className="mt-6 px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-700 w-full"
             >
                 Save Question
             </button>

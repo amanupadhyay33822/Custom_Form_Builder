@@ -34,14 +34,17 @@ const Header = ({ setHeader }) => {
             <div className="mb-4">
                 {/* Circular Image Input */}
                 <label htmlFor="imageInput" className="cursor-pointer flex flex-col items-center">
-                    <div className="w-16 h-16 mb-4 overflow-hidden flex flex-col items-center">
-                        <img
-                            src={imageURL || '/logo.png'}
-                            alt="Brand Logo"
-                            className="w-6 h-6 mr-6 object-cover rounded-full"
-                        />
-                        <h2 className='text-3xl ml-6 font-bold text-center'>Form Menu</h2>
-                    </div>
+                <div className="flex flex-col items-center">
+      <div className="w-16 h-16 mb-2 overflow-hidden rounded-full border border-gray-300 flex items-center justify-center">
+        <img
+            src={imageURL || '/logo.png'}
+            alt="Brand Logo"
+            className="w-full h-full object-cover"
+        />
+      </div>
+      <h2 className="font-bold text-center text-gray-800">Form Menu</h2>
+     </div>
+
 
                     <input
                         type="file"
@@ -95,7 +98,7 @@ const Header = ({ setHeader }) => {
             )}
 
             {/* Preview Box */}
-            <div className="bg-white border p-4 rounded-lg mt-4">
+            {/* <div className="bg-white border p-4 rounded-lg mt-4">
                 {imageURL && (
                     <div className="w-10 h-10 mr-4 overflow-hidden rounded-full border border-gray-300">
                         <img
@@ -111,7 +114,7 @@ const Header = ({ setHeader }) => {
                     )}
                     {description && <p className="text-gray-600">{description}</p>}
                 </div>
-            </div>
+            </div> */}
 
             <button
                 onClick={saveHeader}
