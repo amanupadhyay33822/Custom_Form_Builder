@@ -62,7 +62,7 @@ export const CreateForm = (state) => {
         }//http://localhost:8080/create
         const formData = { formId: randomId, header, questions };
         //https://backend-i-am-sai.koyeb.app/create
-        fetch('http://localhost:8080/create', {
+        fetch('https://form-builder-ajr3.onrender.com/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData),

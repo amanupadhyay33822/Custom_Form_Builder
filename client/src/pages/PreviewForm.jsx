@@ -25,7 +25,7 @@ export const PreviewForm = (props) => {
         console.log("formid", formId);
         if (formId) {
 
-            fetch(`http://localhost:8080/forms/?formId=${formId}`)
+            fetch(`https://form-builder-ajr3.onrender.com/forms/?formId=${formId}`)
                 .then((res) => res.json())
                 .then((res) => {
                     console.log('Data from server:', res);
